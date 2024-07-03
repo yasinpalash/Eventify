@@ -1,11 +1,13 @@
 
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+
+import 'category.dart';
 part 'event.g.dart';
 @HiveType(typeId: 2, adapterName: "EventAdapter")
 class Event extends HiveObject {
   @HiveField(0)
-  String category;
+  HiveList<Category> category;
 
   @HiveField(1)
   DateTime date;

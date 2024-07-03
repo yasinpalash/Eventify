@@ -1,16 +1,21 @@
+import 'package:calendar_app/model/hive_objects/category.dart';
+import 'package:calendar_app/model/hive_objects/event.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 //Boxes
-late Box categoryBox;
-late Box eventBox;
+late Box<Category> categoryBox;
+late Box<Event> eventBox;
 
 const String categoryBoxName="categories";
 const String eventBoxName="events";
 void main()  async{
-  categoryBox=await Hive.openBox(categoryBoxName);
-  eventBox=await Hive.openBox(eventBoxName);
+  categoryBox=await Hive.openBox<Category>(categoryBoxName);
+  eventBox=await Hive.openBox<Event>(eventBoxName);
   //initializing hive database
   await Hive.initFlutter();
+  // register adapter
+  Hive.registerAdapter<Category>(CategoryAdapter());
+  Hive.registerAdapter<Event>(EventAdapter());
   runApp(const MyApp());
 }
 
