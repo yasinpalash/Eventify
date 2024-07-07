@@ -41,6 +41,7 @@ mixin Func {
         .toList();
   }
 
+
   List<Event> getByCategory(String category) {
     return eventBox.values
         .where((event) => event.category[0].name.contains(category))
