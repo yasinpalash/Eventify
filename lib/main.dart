@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (_, child) {
         return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
           title: AppTexts.appName,
           theme: AppThemeData.lightThemeData,
           initialRoute: "/",

@@ -17,4 +17,5 @@ class AppColors {
 
   static const Color primaryColor = Colors.deepPurple;
   static const Color deepPurpleAccent=Colors.deepPurpleAccent;
+  static const Color whiteColor=Colors.white;
 }
