@@ -8,5 +8,6 @@ class AppThemeData {
     textTheme: GoogleFonts.poppinsTextTheme(),
     colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurpleAccent),
     useMaterial3: true,
+    primaryColor: AppColors.primaryColor
   );
 }

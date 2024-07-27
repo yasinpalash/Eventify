@@ -1,0 +1,264 @@
+import 'package:calendar_app/main.dart';
+import 'package:calendar_app/model/hive_objects/category.dart';
+import 'package:calendar_app/model/hive_objects/event.dart';
+import 'package:calendar_app/utils/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
+
+import '../utils/functions.dart';
+
+class EventDetailsScreen extends StatefulWidget {
+  const EventDetailsScreen({super.key});
+  static const routeName = "event";
+
+  @override
+  State<EventDetailsScreen> createState() => _EventDetailsScreenState();
+}
+
+class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
+  final _formKey = GlobalKey<FormState>();
+  Category? dropDownValue;
+  final TextEditingController categoryController = TextEditingController();
+  final TextEditingController eventNameController = TextEditingController();
+  final TextEditingController eventDescriptionController =
+      TextEditingController();
+  bool completed = false;
+  @override
+  Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as EventArguments;
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: const Icon(Icons.arrow_back_ios),
+        ),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        foregroundColor: AppColors.whiteColor,
+        backgroundColor: AppColors.primaryColor,
+        title: Text(
+          'Event',
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {}, icon: const Icon(Icons.save_as_outlined)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
+        ],
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(20.h),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Selected Category",
+                  style: TextStyle(color: AppColors.primaryColor),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.h, bottom: 10.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: ValueListenableBuilder<Box<Category>>(
+                            valueListenable: categoryBox.listenable(),
+                            builder: (context, box, widget) {
+                              return DropdownButton(
+                                  focusColor: const Color(0xffffffff),
+                                  dropdownColor: const Color(0xffffffff),
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+                                  value: dropDownValue,
+                                  items: box.values
+                                      .toList()
+                                      .map<DropdownMenuItem<Category>>(
+                                          (Category value) {
+                                    return DropdownMenuItem(
+                                        value: value, child: Text(value.name));
+                                  }).toList(),
+                                  onChanged: (Category? newValue) {
+                                    setState(() {
+                                      dropDownValue = newValue!;
+                                    });
+                                  });
+                            }),
+                      ),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              backgroundColor: AppColors.primaryColor,
+                              foregroundColor: AppColors.whiteColor),
+                          onPressed: () {
+                            createNewCategory(context);
+                          },
+                          child: const Icon(Icons.add))
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20.h, bottom: 20.h),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_month,
+                        color: AppColors.primaryColor,
+                      ),
+                      Text(
+                        DateFormat("EEEE d MMMM").format(args.daySelected),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryColor),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 20.h),
+                  child: TextFormField(
+                    controller: eventNameController,
+                    decoration: const InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColors.primaryColor)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColors.primaryColor)),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.primaryColor),
+                        ),
+                        labelText: "Enter Event name",
+                        labelStyle: TextStyle(color: AppColors.primaryColor)),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 20.h),
+                  child: TextFormField(
+                    controller: eventDescriptionController,
+                    decoration: const InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColors.primaryColor)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColors.primaryColor)),
+                        border: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColors.primaryColor)),
+                        labelText: "Enter Event description",
+                        labelStyle: TextStyle(color: AppColors.primaryColor)),
+                  ),
+                ),
+                ListTile(
+                  tileColor: AppColors.primaryColor,
+                  textColor: AppColors.whiteColor,
+                  iconColor: AppColors.whiteColor,
+                  title: const Text("Upload file"),
+                  trailing: const Icon(Icons.upload),
+                  onTap: () {},
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20.h),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate() &&
+                              dropDownValue != null) {
+                            addEvent(
+                                Event(
+                                    HiveList(categoryBox),
+                                    args.daySelected,
+                                    eventNameController.text,
+                                    eventDescriptionController.text,
+                                    completed),
+                                dropDownValue!);
+                            if(context.mounted){
+                              Get.back();
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                            foregroundColor: AppColors.whiteColor,
+                            backgroundColor: AppColors.primaryColor,
+                            shape: const RoundedRectangleBorder(),
+                            fixedSize:
+                                Size(MediaQuery.of(context).size.width, 50)),
+                        child: const Text("Add")),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  createNewCategory(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "New Category",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14.sp,
+            ),
+          ),
+          content: TextFormField(
+            decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.primaryColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.primaryColor)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.primaryColor)),
+                labelText: "Add Category",
+                labelStyle: TextStyle(color: AppColors.primaryColor)),
+            controller: categoryController,
+          ),
+          actions: [
+            OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primaryColor),
+                onPressed: () {
+                  Get.back();
+                },
+                child: const Text('Cancel')),
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    foregroundColor: AppColors.whiteColor,
+                    backgroundColor: AppColors.primaryColor),
+                onPressed: () {
+                  if (categoryController.text.isNotEmpty) {
+                    addCategory(Category(categoryController.text));
+                    categoryController.clear();
+                    Get.back();
+                  }
+                },
+                child: const Text("Add"))
+          ],
+        );
+      },
+    );
+  }
+}
+
+class EventArguments {
+  final DateTime daySelected;
+
+  EventArguments({required this.daySelected});
+}
