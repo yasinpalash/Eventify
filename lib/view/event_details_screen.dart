@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:calendar_app/main.dart';
 import 'package:calendar_app/model/hive_objects/category.dart';
 import 'package:calendar_app/model/hive_objects/event.dart';
 import 'package:calendar_app/utils/app_colors.dart';
+import 'package:calendar_app/utils/assets_path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,8 +12,8 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-
 import '../utils/functions.dart';
+import 'package:lottie/lottie.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   const EventDetailsScreen({super.key});
@@ -29,9 +29,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
   final TextEditingController categoryController = TextEditingController();
   final TextEditingController eventNameController = TextEditingController();
   final TextEditingController eventDescriptionController =
-      TextEditingController();
+  TextEditingController();
   Uint8List? imageBytes;
   bool completed = false;
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as EventArguments;
@@ -65,7 +66,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   "Selected Category",
                   style: TextStyle(color: AppColors.primaryColor),
                 ),
@@ -89,9 +90,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                                       .toList()
                                       .map<DropdownMenuItem<Category>>(
                                           (Category value) {
-                                    return DropdownMenuItem(
-                                        value: value, child: Text(value.name));
-                                  }).toList(),
+                                        return DropdownMenuItem(
+                                            value: value, child: Text(value.name));
+                                      }).toList(),
                                   onChanged: (Category? newValue) {
                                     setState(() {
                                       dropDownValue = newValue!;
@@ -135,10 +136,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                     decoration: const InputDecoration(
                         enabledBorder: OutlineInputBorder(
                             borderSide:
-                                BorderSide(color: AppColors.primaryColor)),
+                            BorderSide(color: AppColors.primaryColor)),
                         focusedBorder: OutlineInputBorder(
                             borderSide:
-                                BorderSide(color: AppColors.primaryColor)),
+                            BorderSide(color: AppColors.primaryColor)),
                         border: OutlineInputBorder(
                           borderSide: BorderSide(color: AppColors.primaryColor),
                         ),
@@ -153,13 +154,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                     decoration: const InputDecoration(
                         enabledBorder: OutlineInputBorder(
                             borderSide:
-                                BorderSide(color: AppColors.primaryColor)),
+                            BorderSide(color: AppColors.primaryColor)),
                         focusedBorder: OutlineInputBorder(
                             borderSide:
-                                BorderSide(color: AppColors.primaryColor)),
+                            BorderSide(color: AppColors.primaryColor)),
                         border: OutlineInputBorder(
                             borderSide:
-                                BorderSide(color: AppColors.primaryColor)),
+                            BorderSide(color: AppColors.primaryColor)),
                         labelText: "Enter Event description",
                         labelStyle: TextStyle(color: AppColors.primaryColor)),
                   ),
@@ -172,7 +173,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                   trailing: const Icon(Icons.upload),
                   onTap: () async {
                     FilePickerResult? result =
-                        await FilePicker.platform.pickFiles();
+                    await FilePicker.platform.pickFiles();
 
                     if (result != null) {
                       File file = File(result.files.single.path!);
@@ -183,10 +184,22 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                 ),
                 (imageBytes != null)
                     ? Image.memory(
-                        imageBytes!,
-                        width: 150.h,
-                      )
+                  imageBytes!,
+                  width: 150.h,
+                )
                     : const SizedBox.shrink(),
+                SwitchListTile(
+                    value: completed,
+                    title: Text(
+                      "Event completed?",
+                      style: TextStyle(
+                          color: AppColors.primaryColor, fontSize: 14.sp),
+                    ),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        completed = value!;
+                      });
+                    }),
                 Padding(
                   padding: EdgeInsets.only(top: 20.h),
                   child: Align(
@@ -204,7 +217,19 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                                     completed),
                                 dropDownValue!);
                             if (context.mounted) {
-                              Get.back();
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return Dialog(
+                                      backgroundColor: Colors.transparent,
+                                      child: Lottie.asset(
+                                         AssetsPath.statusAlert,
+                                          repeat: false),
+                                    );
+                                  });
+                              Future.delayed(const Duration(milliseconds: 1600), () {
+                                Get.offAllNamed('/');
+                              });
                             }
                           }
                         },
@@ -213,7 +238,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                             backgroundColor: AppColors.primaryColor,
                             shape: const RoundedRectangleBorder(),
                             fixedSize:
-                                Size(MediaQuery.of(context).size.width, 50)),
+                            Size(MediaQuery.of(context).size.width, 50)),
                         child: const Text("Add")),
                   ),
                 )
@@ -224,6 +249,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
       ),
     );
   }
+
   createNewCategory(BuildContext context) {
     return showDialog(
       context: context,
@@ -282,3 +308,4 @@ class EventArguments {
 
   EventArguments({required this.daySelected});
 }
+
