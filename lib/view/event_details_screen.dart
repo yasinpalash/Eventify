@@ -1,7 +1,11 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:calendar_app/main.dart';
 import 'package:calendar_app/model/hive_objects/category.dart';
 import 'package:calendar_app/model/hive_objects/event.dart';
 import 'package:calendar_app/utils/app_colors.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -26,6 +30,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
   final TextEditingController eventNameController = TextEditingController();
   final TextEditingController eventDescriptionController =
       TextEditingController();
+  Uint8List? imageBytes;
   bool completed = false;
   @override
   Widget build(BuildContext context) {
@@ -165,8 +170,23 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                   iconColor: AppColors.whiteColor,
                   title: const Text("Upload file"),
                   trailing: const Icon(Icons.upload),
-                  onTap: () {},
+                  onTap: () async {
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles();
+
+                    if (result != null) {
+                      File file = File(result.files.single.path!);
+                      imageBytes = await file.readAsBytes();
+                      setState(() {});
+                    }
+                  },
                 ),
+                (imageBytes != null)
+                    ? Image.memory(
+                        imageBytes!,
+                        width: 150.h,
+                      )
+                    : const SizedBox.shrink(),
                 Padding(
                   padding: EdgeInsets.only(top: 20.h),
                   child: Align(
@@ -183,7 +203,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                                     eventDescriptionController.text,
                                     completed),
                                 dropDownValue!);
-                            if(context.mounted){
+                            if (context.mounted) {
                               Get.back();
                             }
                           }
@@ -204,7 +224,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
       ),
     );
   }
-
   createNewCategory(BuildContext context) {
     return showDialog(
       context: context,
@@ -239,17 +258,18 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                 },
                 child: const Text('Cancel')),
             ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    foregroundColor: AppColors.whiteColor,
-                    backgroundColor: AppColors.primaryColor),
-                onPressed: () {
-                  if (categoryController.text.isNotEmpty) {
-                    addCategory(Category(categoryController.text));
-                    categoryController.clear();
-                    Get.back();
-                  }
-                },
-                child: const Text("Add"))
+              style: ElevatedButton.styleFrom(
+                  foregroundColor: AppColors.whiteColor,
+                  backgroundColor: AppColors.primaryColor),
+              onPressed: () {
+                if (categoryController.text.isNotEmpty) {
+                  addCategory(Category(categoryController.text));
+                  categoryController.clear();
+                  Get.back();
+                }
+              },
+              child: const Text("Add"),
+            )
           ],
         );
       },
