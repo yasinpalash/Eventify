@@ -24,6 +24,6 @@ class Event extends HiveObject {
   @HiveField(5)
   bool completed;
 
-  Event(this.category, this.date, this.eventName, this.eventDescription,
+  Event(this.category, this.date, this.eventName, this.eventDescription,this.file,
       this.completed);
 }

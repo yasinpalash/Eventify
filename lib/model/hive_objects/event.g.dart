@@ -21,8 +21,9 @@ class EventAdapter extends TypeAdapter<Event> {
       fields[1] as DateTime,
       fields[2] as String,
       fields[3] as String,
+      fields[4] as Uint8List?,
       fields[5] as bool,
-    )..file = fields[4] as Uint8List?;
+    );
   }
 
   @override

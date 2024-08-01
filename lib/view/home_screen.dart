@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         arguments: EventArguments(daySelected: DateTime.utc(
 
                             daySelected.year, daySelected.month, daySelected.day
-                        )));
+                        ),view: false,));
                   },
                   label: const Text('Add Event'),
                   icon: const Icon(Icons.add),

@@ -4,7 +4,6 @@ import 'package:calendar_app/main.dart';
 import 'package:calendar_app/model/hive_objects/category.dart';
 import 'package:calendar_app/model/hive_objects/event.dart';
 import 'package:calendar_app/utils/app_colors.dart';
-import 'package:calendar_app/utils/assets_path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,7 +12,6 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import '../utils/functions.dart';
-import 'package:lottie/lottie.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   const EventDetailsScreen({super.key});
@@ -32,10 +30,21 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
   TextEditingController();
   Uint8List? imageBytes;
   bool completed = false;
+  bool viewed=false;
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as EventArguments;
+    if(args.view&&!viewed){
+      setState(() {
+        dropDownValue=args.event?.category[0];
+        eventNameController.text=args.event!.eventName;
+        eventDescriptionController.text=args.event!.eventDescription;
+        imageBytes =args.event!.file;
+        completed =args.event!.completed;
+        viewed=true;
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -54,7 +63,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
         ),
         actions: [
           IconButton(
-              onPressed: () {}, icon: const Icon(Icons.save_as_outlined)),
+              onPressed:(args.view)? () {
+            updateExisitngEvent(args, context);
+              }:null, icon: const Icon(Icons.save_as_outlined)),
           IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
         ],
       ),
@@ -205,7 +216,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                   child: Align(
                     alignment: Alignment.center,
                     child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: (args.view)?null:() {
                           if (_formKey.currentState!.validate() &&
                               dropDownValue != null) {
                             addEvent(
@@ -214,22 +225,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                                     args.daySelected,
                                     eventNameController.text,
                                     eventDescriptionController.text,
+                                    imageBytes ,
                                     completed),
                                 dropDownValue!);
                             if (context.mounted) {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return Dialog(
-                                      backgroundColor: Colors.transparent,
-                                      child: Lottie.asset(
-                                         AssetsPath.statusAlert,
-                                          repeat: false),
-                                    );
-                                  });
-                              Future.delayed(const Duration(milliseconds: 1600), () {
-                                Get.offAllNamed('/');
-                              });
+                              Navigator.pop(context);
                             }
                           }
                         },
@@ -301,11 +301,27 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
       },
     );
   }
+  void updateExisitngEvent(EventArguments args, BuildContext context) {
+    args.event?.category = HiveList(categoryBox);
+    args.event?.date = args.daySelected;
+    args.event?.eventName = eventNameController.text;
+    args.event?.eventDescription = eventDescriptionController.text;
+    args.event?.file = imageBytes;
+    args.event?.completed = completed;
+    updateEvent(args.event!, dropDownValue!);
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+
+
 }
 
 class EventArguments {
   final DateTime daySelected;
-
-  EventArguments({required this.daySelected});
+  final Event? event;
+  final bool view;
+  EventArguments({required this.daySelected, this.event,required this.view});
 }
 
