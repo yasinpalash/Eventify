@@ -61,8 +61,10 @@ class EventList extends StatelessWidget with Func {
                 return InkWell(
                   onTap: () {
                     Navigator.pushNamed(context, EventDetailsScreen.routeName,
-                        arguments:
-                            EventArguments(daySelected: events[index].date,view: true,event:events[index] ));
+                        arguments: EventArguments(
+                            daySelected: events[index].date,
+                            view: true,
+                            event: events[index]));
                   },
                   child: Card(
                     color: AppColors.whiteColor,

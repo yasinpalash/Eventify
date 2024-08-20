@@ -27,22 +27,22 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
   final TextEditingController categoryController = TextEditingController();
   final TextEditingController eventNameController = TextEditingController();
   final TextEditingController eventDescriptionController =
-  TextEditingController();
+      TextEditingController();
   Uint8List? imageBytes;
   bool completed = false;
-  bool viewed=false;
+  bool viewed = false;
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as EventArguments;
-    if(args.view&&!viewed){
+    if (args.view && !viewed) {
       setState(() {
-        dropDownValue=args.event?.category[0];
-        eventNameController.text=args.event!.eventName;
-        eventDescriptionController.text=args.event!.eventDescription;
-        imageBytes =args.event!.file;
-        completed =args.event!.completed;
-        viewed=true;
+        dropDownValue = args.event?.category[0];
+        eventNameController.text = args.event!.eventName;
+        eventDescriptionController.text = args.event!.eventDescription;
+        imageBytes = args.event!.file;
+        completed = args.event!.completed;
+        viewed = true;
       });
     }
     return Scaffold(
@@ -63,10 +63,19 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
         ),
         actions: [
           IconButton(
-              onPressed:(args.view)? () {
-            updateExisitngEvent(args, context);
-              }:null, icon: const Icon(Icons.save_as_outlined)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
+              onPressed: (args.view)
+                  ? () {
+                      updateExisitngEvent(args, context);
+                    }
+                  : null,
+              icon: const Icon(Icons.save_as_outlined)),
+          IconButton(
+              onPressed: (args.view)
+                  ? () {
+                      deleteMethod(context, args);
+                    }
+                  : null,
+              icon: const Icon(Icons.delete)),
         ],
       ),
       body: Padding(
@@ -101,9 +110,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                                       .toList()
                                       .map<DropdownMenuItem<Category>>(
                                           (Category value) {
-                                        return DropdownMenuItem(
-                                            value: value, child: Text(value.name));
-                                      }).toList(),
+                                    return DropdownMenuItem(
+                                        value: value, child: Text(value.name));
+                                  }).toList(),
                                   onChanged: (Category? newValue) {
                                     setState(() {
                                       dropDownValue = newValue!;
@@ -147,10 +156,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                     decoration: const InputDecoration(
                         enabledBorder: OutlineInputBorder(
                             borderSide:
-                            BorderSide(color: AppColors.primaryColor)),
+                                BorderSide(color: AppColors.primaryColor)),
                         focusedBorder: OutlineInputBorder(
                             borderSide:
-                            BorderSide(color: AppColors.primaryColor)),
+                                BorderSide(color: AppColors.primaryColor)),
                         border: OutlineInputBorder(
                           borderSide: BorderSide(color: AppColors.primaryColor),
                         ),
@@ -165,13 +174,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                     decoration: const InputDecoration(
                         enabledBorder: OutlineInputBorder(
                             borderSide:
-                            BorderSide(color: AppColors.primaryColor)),
+                                BorderSide(color: AppColors.primaryColor)),
                         focusedBorder: OutlineInputBorder(
                             borderSide:
-                            BorderSide(color: AppColors.primaryColor)),
+                                BorderSide(color: AppColors.primaryColor)),
                         border: OutlineInputBorder(
                             borderSide:
-                            BorderSide(color: AppColors.primaryColor)),
+                                BorderSide(color: AppColors.primaryColor)),
                         labelText: "Enter Event description",
                         labelStyle: TextStyle(color: AppColors.primaryColor)),
                   ),
@@ -181,10 +190,12 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                   textColor: AppColors.whiteColor,
                   iconColor: AppColors.whiteColor,
                   title: const Text("Upload file"),
-                  trailing: const Icon(Icons.upload),
+                  trailing: (imageBytes != null)
+                      ? const Icon(Icons.done)
+                      : const Icon(Icons.upload),
                   onTap: () async {
                     FilePickerResult? result =
-                    await FilePicker.platform.pickFiles();
+                        await FilePicker.platform.pickFiles();
 
                     if (result != null) {
                       File file = File(result.files.single.path!);
@@ -195,9 +206,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                 ),
                 (imageBytes != null)
                     ? Image.memory(
-                  imageBytes!,
-                  width: 150.h,
-                )
+                        imageBytes!,
+                        width: 150.h,
+                      )
                     : const SizedBox.shrink(),
                 SwitchListTile(
                     value: completed,
@@ -216,29 +227,31 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
                   child: Align(
                     alignment: Alignment.center,
                     child: ElevatedButton(
-                        onPressed: (args.view)?null:() {
-                          if (_formKey.currentState!.validate() &&
-                              dropDownValue != null) {
-                            addEvent(
-                                Event(
-                                    HiveList(categoryBox),
-                                    args.daySelected,
-                                    eventNameController.text,
-                                    eventDescriptionController.text,
-                                    imageBytes ,
-                                    completed),
-                                dropDownValue!);
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                            }
-                          }
-                        },
+                        onPressed: (args.view)
+                            ? null
+                            : () {
+                                if (_formKey.currentState!.validate() &&
+                                    dropDownValue != null) {
+                                  addEvent(
+                                      Event(
+                                          HiveList(categoryBox),
+                                          args.daySelected,
+                                          eventNameController.text,
+                                          eventDescriptionController.text,
+                                          imageBytes,
+                                          completed),
+                                      dropDownValue!);
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              },
                         style: ElevatedButton.styleFrom(
                             foregroundColor: AppColors.whiteColor,
                             backgroundColor: AppColors.primaryColor,
                             shape: const RoundedRectangleBorder(),
                             fixedSize:
-                            Size(MediaQuery.of(context).size.width, 50)),
+                                Size(MediaQuery.of(context).size.width, 50)),
                         child: const Text("Add")),
                   ),
                 )
@@ -301,6 +314,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
       },
     );
   }
+
   void updateExisitngEvent(EventArguments args, BuildContext context) {
     args.event?.category = HiveList(categoryBox);
     args.event?.date = args.daySelected;
@@ -314,14 +328,47 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> with Func {
     }
   }
 
-
-
+  deleteMethod(BuildContext context, EventArguments args) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Calender App',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            content: const Text('Do you want to delete this event?'),
+            actions: [
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor),
+                  onPressed: () {
+                    deleteEven(args.event!);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(color: AppColors.whiteColor),
+                  )),
+              OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primaryColor),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("No"))
+            ],
+          );
+        });
+  }
 }
 
 class EventArguments {
   final DateTime daySelected;
   final Event? event;
   final bool view;
-  EventArguments({required this.daySelected, this.event,required this.view});
+  EventArguments({required this.daySelected, this.event, required this.view});
 }
-
