@@ -125,10 +125,10 @@ class EventList extends StatelessWidget with Func {
                                     onPressed: () {
                                       Navigator.pushNamed(
                                           context, CategoryScreen.routeName,
-
-                                      arguments: CategoryArgument(category: events[index].eventName)
-                                      );
-
+                                          arguments: CategoryArgument(
+                                              category: events[index]
+                                                  .category[0]
+                                                  .name));
                                     },
                                     backgroundColor: AppColors.primaryColor,
                                     color: const WidgetStatePropertyAll<Color>(

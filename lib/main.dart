@@ -1,3 +1,6 @@
+
+import 'dart:convert';
+
 import 'package:calendar_app/model/hive_objects/category.dart';
 import 'package:calendar_app/model/hive_objects/event.dart';
 import 'package:calendar_app/utils/app_texts.dart';
@@ -7,6 +10,7 @@ import 'package:calendar_app/view/event_details_screen.dart';
 import 'package:calendar_app/view/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -17,16 +21,32 @@ late Box<Event> eventBox;
 const String categoryBoxName = "categories";
 const String eventBoxName = "events";
 
+String customKey = "calender";
 void main() async {
   // initializing hive database
   await Hive.initFlutter();
+
+  const secureStorage = FlutterSecureStorage();
+
+  final encryptionKeyString = await secureStorage.read(key: customKey);
+  if (encryptionKeyString == null) {
+    final key = Hive.generateSecureKey();
+    await secureStorage.write(key: customKey, value: base64UrlEncode(key));
+  }
+  final key = await secureStorage.read(key: customKey);
+  final encryptionKeyUnit8List = base64Url.decode(key!);
   // register adapter
   Hive.registerAdapter<Category>(CategoryAdapter());
   Hive.registerAdapter<Event>(EventAdapter());
 
-  categoryBox = await Hive.openBox<Category>(categoryBoxName);
-  eventBox = await Hive.openBox<Event>(eventBoxName);
+  categoryBox = await Hive.openBox<Category>(categoryBoxName,
+      encryptionCipher: HiveAesCipher(encryptionKeyUnit8List) );
 
+  eventBox = await Hive.openBox<Event>(eventBoxName,
+      encryptionCipher: HiveAesCipher(encryptionKeyUnit8List) );
+
+   await categoryBox.compact();
+   await eventBox.compact();
   runApp(const MyApp());
 }
 
@@ -45,11 +65,12 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: AppTexts.appName,
           theme: AppThemeData.lightThemeData,
-
           initialRoute: "/",
-          routes: {"/": (context) => const HomeScreen(),
-          EventDetailsScreen.routeName: (context)=> const EventDetailsScreen(),
-            CategoryScreen.routeName:(context)=>const CategoryScreen()
+          routes: {
+            "/": (context) => const HomeScreen(),
+            EventDetailsScreen.routeName: (context) =>
+                const EventDetailsScreen(),
+            CategoryScreen.routeName: (context) => const CategoryScreen()
           },
         );
       },
