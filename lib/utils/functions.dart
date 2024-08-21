@@ -33,13 +33,22 @@ mixin Func {
   }
 
   List<Event> searchEvent(String searchWord) {
-    return eventBox.values
-        .where((event) =>
-            event.eventName.contains(searchWord) ||
-            event.eventDescription.contains(searchWord) ||
-            event.category[0].name.contains(searchWord))
-        .toList();
+    // Convert searchWord to lowercase for case-insensitive comparison
+    String searchWordLower = searchWord.toLowerCase();
+
+    return eventBox.values.where((event) {
+      // Convert event fields to lowercase for comparison
+      String eventNameLower = event.eventName.toLowerCase();
+      String eventDescriptionLower = event.eventDescription.toLowerCase();
+      String categoryLower = event.category[0].name.toLowerCase();
+
+      // Check if any of the fields contain the search word
+      return eventNameLower.contains(searchWordLower) ||
+          eventDescriptionLower.contains(searchWordLower) ||
+          categoryLower.contains(searchWordLower);
+    }).toList();
   }
+
 
 
   List<Event> getByCategory(String category) {

@@ -3,6 +3,7 @@ import 'package:calendar_app/model/hive_objects/event.dart';
 import 'package:calendar_app/utils/app_colors.dart';
 import 'package:calendar_app/utils/assets_path.dart';
 import 'package:calendar_app/utils/functions.dart';
+import 'package:calendar_app/view/category_screen.dart';
 import 'package:calendar_app/view/event_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,14 +16,23 @@ class EventList extends StatelessWidget with Func {
   final bool all;
   final bool filter;
   final String searchWord;
-  const EventList({super.key, required this.date, required this.all, required this.filter, required this.searchWord});
+  const EventList(
+      {super.key,
+      required this.date,
+      required this.all,
+      required this.filter,
+      required this.searchWord});
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Box<Event>>(
       valueListenable: eventBox.listenable(),
       builder: (context, box, widget) {
-        List<Event> events =(all)?box.values.toList():(filter)?searchEvent(searchWord): getEventsByDate(date);
+        List<Event> events = (all)
+            ? box.values.toList()
+            : (filter)
+                ? searchEvent(searchWord)
+                : getEventsByDate(date);
         if (events.isEmpty) {
           return Center(
             child: Column(
@@ -113,6 +123,11 @@ class EventList extends StatelessWidget with Func {
                                           color: AppColors.whiteColor),
                                     ),
                                     onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, CategoryScreen.routeName,
+
+                                      arguments: CategoryArgument(category: events[index].eventName)
+                                      );
 
                                     },
                                     backgroundColor: AppColors.primaryColor,
