@@ -12,14 +12,17 @@ import 'package:lottie/lottie.dart';
 
 class EventList extends StatelessWidget with Func {
   final DateTime date;
-  const EventList({super.key, required this.date});
+  final bool all;
+  final bool filter;
+  final String searchWord;
+  const EventList({super.key, required this.date, required this.all, required this.filter, required this.searchWord});
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Box<Event>>(
       valueListenable: eventBox.listenable(),
       builder: (context, box, widget) {
-        List<Event> events = getEventsByDate(date);
+        List<Event> events =(all)?box.values.toList():(filter)?searchEvent(searchWord): getEventsByDate(date);
         if (events.isEmpty) {
           return Center(
             child: Column(
@@ -109,7 +112,9 @@ class EventList extends StatelessWidget with Func {
                                       style: const TextStyle(
                                           color: AppColors.whiteColor),
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+
+                                    },
                                     backgroundColor: AppColors.primaryColor,
                                     color: const WidgetStatePropertyAll<Color>(
                                         AppColors.primaryColor),

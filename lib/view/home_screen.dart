@@ -18,6 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
       DateTime.now().year, DateTime.now().month, DateTime.now().day);
   bool search = false;
   final TextEditingController searchTEController = TextEditingController();
+  bool viewAll = false;
+  bool filter = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +35,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: AppColors.whiteColor,
                         fontSize: 14.sp,
                         fontWeight: FontWeight.bold)),
-                onChanged: (value) {},
+                onChanged: (value) {
+                  setState(() {
+                    viewAll = false;
+                    filter = true;
+                  });
+                },
               )
             : Text(
                 AppTexts.homeScreenAppBar,
@@ -60,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     setState(() {
                       search = true;
+                      viewAll = true;
                     });
                   },
                   icon: const Icon(
@@ -127,12 +135,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             foregroundColor: AppColors.primaryColor),
                         onPressed: () {
                           Navigator.pushNamed(
-                              context, EventDetailsScreen.routeName,
-                              arguments: EventArguments(
-                                daySelected: DateTime.utc(daySelected.year,
-                                    daySelected.month, daySelected.day),
-                                view: false,
-                              ));
+                            context,
+                            EventDetailsScreen.routeName,
+                            arguments: EventArguments(
+                              daySelected: DateTime.utc(daySelected.year,
+                                  daySelected.month, daySelected.day),
+                              view: false,
+                            ),
+                          );
                         },
                         label: const Text('Add Event'),
                         icon: const Icon(Icons.add),
@@ -145,6 +155,9 @@ class _HomeScreenState extends State<HomeScreen> {
             EventList(
               date: DateTime.utc(
                   daySelected.year, daySelected.month, daySelected.day),
+              all: viewAll,
+              filter: filter,
+              searchWord: searchTEController.text,
             ),
           ],
         ),
