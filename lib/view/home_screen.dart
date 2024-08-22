@@ -1,9 +1,12 @@
+import 'package:calendar_app/routes/app_route.dart';
 import 'package:calendar_app/utils/app_colors.dart';
 import 'package:calendar_app/utils/app_texts.dart';
 import 'package:calendar_app/view/event_details_screen.dart';
 import 'package:calendar_app/widgets/event_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -134,15 +137,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.primaryColor),
                         onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            EventDetailsScreen.routeName,
-                            arguments: EventArguments(
-                              daySelected: DateTime.utc(daySelected.year,
-                                  daySelected.month, daySelected.day),
-                              view: false,
-                            ),
-                          );
+                          Get.toNamed(AppRoutes.eventDetailsScreen,arguments:  EventArguments(
+                            daySelected: DateTime.utc(daySelected.year,
+                                daySelected.month, daySelected.day),
+                            view: false,
+                          ),);
                         },
                         label: const Text('Add Event'),
                         icon: const Icon(Icons.add),

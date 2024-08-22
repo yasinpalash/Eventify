@@ -18,10 +18,10 @@ class EventList extends StatelessWidget with Func {
   final String searchWord;
   const EventList(
       {super.key,
-      required this.date,
-      required this.all,
-      required this.filter,
-      required this.searchWord});
+        required this.date,
+        required this.all,
+        required this.filter,
+        required this.searchWord});
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +31,8 @@ class EventList extends StatelessWidget with Func {
         List<Event> events = (all)
             ? box.values.toList()
             : (filter)
-                ? searchEvent(searchWord)
-                : getEventsByDate(date);
+            ? searchEvent(searchWord)
+            : getEventsByDate(date);
         if (events.isEmpty) {
           return Center(
             child: Column(
