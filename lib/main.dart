@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:calendar_app/model/hive_objects/category.dart';
 import 'package:calendar_app/model/hive_objects/event.dart';
-import 'package:calendar_app/routes/app_route.dart';
 import 'package:calendar_app/utils/app_texts.dart';
 import 'package:calendar_app/utils/app_theme_data.dart';
+import 'package:calendar_app/view/category_screen.dart';
+import 'package:calendar_app/view/event_details_screen.dart';
+import 'package:calendar_app/view/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -62,8 +64,13 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: AppTexts.appName,
           theme: AppThemeData.lightThemeData,
-          initialRoute: AppRoutes.getHomeRoute(),
-          getPages: AppRoutes.routes,
+          initialRoute: "/",
+          routes: {
+            "/": (context) =>  HomeScreen(),
+            EventDetailsScreen.routeName: (context) =>
+                const EventDetailsScreen(),
+            CategoryScreen.routeName: (context) => const CategoryScreen()
+          },
         );
       },
     );

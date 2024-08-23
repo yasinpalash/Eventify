@@ -15,7 +15,8 @@ class AppColors {
     900: Colors.deepPurple.shade900,
   };
 
-  static const Color primaryColor=Colors.deepPurpleAccent;
+  static const Color primaryColor=Color(0XFFC14D37);
+
   static const Color whiteColor=Colors.white;
   static const Color greyColor=Colors.grey;
 }
