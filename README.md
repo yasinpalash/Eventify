@@ -1,4 +1,4 @@
-# calendar_app
+# Eventify
 
 A new Flutter project.
 
