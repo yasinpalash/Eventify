@@ -29,7 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
     Map<DateTime, List> eventMarkers = {};
 
     for (var event in events) {
-      DateTime eventDay = DateTime.utc(event.date.year, event.date.month, event.date.day);
+      DateTime eventDay =
+          DateTime.utc(event.date.year, event.date.month, event.date.day);
       if (eventMarkers[eventDay] == null) {
         eventMarkers[eventDay] = [event];
       } else {
@@ -48,54 +49,54 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: AppColors.primaryColor,
         title: (search)
             ? TextField(
-          controller: searchTEController,
-          cursorColor: AppColors.whiteColor,
-          decoration: InputDecoration(
-              hintText: "Search here",
-              hintStyle: TextStyle(
-                  color: AppColors.whiteColor,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold)),
-          onChanged: (value) {
-            setState(() {
-              viewAll = false;
-              filter = true;
-            });
-          },
-        )
+                controller: searchTEController,
+                cursorColor: AppColors.whiteColor,
+                decoration: InputDecoration(
+                    hintText: "Search here",
+                    hintStyle: TextStyle(
+                        color: AppColors.whiteColor,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold)),
+                onChanged: (value) {
+                  setState(() {
+                    viewAll = false;
+                    filter = true;
+                  });
+                },
+              )
             : Text(
-          AppTexts.homeScreenAppBar,
-          style: TextStyle(
-              fontSize: 16.sp,
-              color: AppColors.whiteColor,
-              fontWeight: FontWeight.bold),
-        ),
+                AppTexts.homeScreenAppBar,
+                style: TextStyle(
+                    fontSize: 16.sp,
+                    color: AppColors.whiteColor,
+                    fontWeight: FontWeight.bold),
+              ),
         centerTitle: false,
         actions: [
           (search)
               ? IconButton(
-            onPressed: () {
-              setState(() {
-                search = false;
-              });
-            },
-            icon: const Icon(
-              Icons.cancel,
-              color: AppColors.whiteColor,
-            ),
-          )
+                  onPressed: () {
+                    setState(() {
+                      search = false;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.cancel,
+                    color: AppColors.whiteColor,
+                  ),
+                )
               : IconButton(
-            onPressed: () {
-              setState(() {
-                search = true;
-                viewAll = true;
-              });
-            },
-            icon: const Icon(
-              Icons.search,
-              color: AppColors.whiteColor,
-            ),
-          )
+                  onPressed: () {
+                    setState(() {
+                      search = true;
+                      viewAll = true;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.search,
+                    color: AppColors.whiteColor,
+                  ),
+                )
         ],
       ),
       body: SingleChildScrollView(
@@ -115,50 +116,73 @@ class _HomeScreenState extends State<HomeScreen> {
                         daySelected = selectedDay;
                       });
                     },
-                    calendarStyle: const CalendarStyle(
+                    calendarStyle: CalendarStyle(
                       todayDecoration: BoxDecoration(
-                        color: AppColors.primaryColor,
+                        color: AppColors.primaryColor.withOpacity(0.8),
                         shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                          ),
+                        ],
                       ),
                       selectedDecoration: BoxDecoration(
-                        color: Colors.deepOrange,
+                        color: Colors.grey,
                         shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                          ),
+                        ],
                       ),
-                      holidayTextStyle: TextStyle(
-                        color: Colors.green,
+                      defaultTextStyle: const TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
                       ),
                       outsideDaysVisible: false,
                     ),
-                    headerStyle: const HeaderStyle(
-                      formatButtonVisible: true,
+                    headerStyle: HeaderStyle(
+                      formatButtonVisible: false,
                       titleCentered: true,
-                      titleTextStyle: TextStyle(
+                      titleTextStyle: const TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
                         color: AppColors.primaryColor,
                       ),
-                      leftChevronIcon: Icon(
+                      leftChevronIcon: const Icon(
                         Icons.chevron_left,
                         color: AppColors.primaryColor,
                       ),
-                      rightChevronIcon: Icon(
+                      rightChevronIcon: const Icon(
                         Icons.chevron_right,
                         color: AppColors.primaryColor,
                       ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      headerPadding: const EdgeInsets.all(8.0),
                     ),
                     calendarBuilders: CalendarBuilders(
                       defaultBuilder: (context, day, focusedDay) {
                         if (eventMarkers.containsKey(day)) {
                           return Container(
-                            margin: const EdgeInsets.all(4.0),
+                            margin: const EdgeInsets.all(9.0),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.red, // Marking the day with events in red
+                              color: AppColors.primaryColor.withOpacity(0.3),
                             ),
                             child: Center(
                               child: Text(
                                 '${day.day}',
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           );
