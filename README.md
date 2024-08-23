@@ -36,8 +36,9 @@ The app is built using the Model-View-Controller (MVC) architecture. This design
 - Google Fonts: Access to the Google Fonts library for customizable typography.
 - Table Calendar: Highly customizable, feature-rich Flutter calendar widget.
 - intl: Internationalization and formatting of dates.
-- Status Alert: Customizable alert and status notifications.
+- Status Alert: Customizable alerts and status notifications.
 - Flutter Secure Storage: Secure storage of key-value pairs on Android and iOS.
 - File Picker: A package for picking files from the device's file system.
 - Lottie: A library for adding high-quality animations to your Flutter app.
+
 For a complete list of dependencies, check the pubspec.yaml file.
