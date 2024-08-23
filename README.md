@@ -1,8 +1,5 @@
 # Eventify
-
-A new Flutter project.
-
-## Getting Started
+## Introduction
 
 This project is a starting point for a Flutter application.
 
