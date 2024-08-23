@@ -2,6 +2,11 @@
 ## Introduction
 
 Eventify is a powerful, user-friendly Flutter-based mobile application designed to help you effortlessly manage and organize your events. Whether it's for personal, professional, or social purposes, Eventify provides an intuitive platform to create, view, and manage events in a seamless calendar format. With its clean UI, robust features, and local data storage powered by Hive, Eventify ensures that your event management experience is both efficient and enjoyable.
+## video
+
+
+https://github.com/user-attachments/assets/abcbbf4e-aaa6-4e31-b797-4d6cfb92ff61
+
 
 ## Features
 - Event Creation & Management: Easily create, update, and delete events with customizable fields including name, description, category, and file attachments.
